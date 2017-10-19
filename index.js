@@ -28,7 +28,7 @@ function setup (fetch) {
     fetchCachedDns[key] = fetch[key];
   }
 
-  fetchCachedDns.default = fetchCachedDns;
+  fetchCachedDns.default = fetch;
 
   return fetchCachedDns;
 }
