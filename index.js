@@ -28,7 +28,10 @@ function setup (fetch) {
     fetchCachedDns[key] = fetch[key];
   }
 
-  fetchCachedDns.default = fetchCachedDns;
-
   return fetchCachedDns;
 }
+
+module.exports.default = module.exports;
+Object.defineProperty(module.exports, '__esModule', {
+  value: true
+});
