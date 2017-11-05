@@ -13,6 +13,14 @@
     "url": "git+https://github.com/zeit/fetch-cached-dns.git"
   },
   "author": "Nathan Rajlich <nate@zeit.co>",
+  "pre-commit": "lint:staged",
+  "lint-staged": {
+    "*.js": [
+      "eslint",
+      "prettier --write --single-quote --no-semi",
+      "git add"
+    ]
+  },
   "bugs": {
     "url": "https://github.com/zeit/fetch-cached-dns/issues"
   },
