@@ -13,6 +13,7 @@ function setup(fetch) {
   const { Headers } = fetch
 
   async function fetchCachedDns(url, opts) {
+    const started = Date.now()
     const parsed = parse(url)
     const ip = isIP(parsed.hostname)
     if (ip === 0) {
@@ -29,6 +30,11 @@ function setup(fetch) {
     if (isRedirect(res.status)) {
       const redirectOpts = Object.assign({}, opts)
       redirectOpts.headers = new Headers(opts.headers)
+
+      if (redirectOpts.timeout) {
+        const nextTimeout = redirectOpts.timeout - (Date.now() - started)
+        redirectOpts.timeout = nextTimeout > 0 ? nextTimeout : 0
+      }
 
       // per fetch spec, for POST request with 301/302 response, or any request with 303 response, use GET when following redirect
       if (
