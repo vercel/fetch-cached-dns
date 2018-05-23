@@ -13,7 +13,7 @@ function setup(fetch) {
   const { Headers } = fetch
 
   async function fetchCachedDns(url, opts) {
-    const started = Date.now()
+    const startedAt = Date.now()
     const parsed = parse(url)
     const ip = isIP(parsed.hostname)
     if (ip === 0) {
@@ -32,7 +32,7 @@ function setup(fetch) {
       redirectOpts.headers = new Headers(opts.headers)
 
       if (redirectOpts.timeout) {
-        const nextTimeout = redirectOpts.timeout - (Date.now() - started)
+        const nextTimeout = redirectOpts.timeout - (Date.now() - startedAt)
         redirectOpts.timeout = nextTimeout > 0 ? nextTimeout : 0
       }
 
