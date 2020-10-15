@@ -17,7 +17,7 @@
     "type": "git",
     "url": "git+https://github.com/vercel/fetch-cached-dns.git"
   },
-  "author": "Nathan Rajlich <nate@vercel.co>",
+  "author": "Nathan Rajlich <nate@vercel.com>",
   "pre-commit": "lint:staged",
   "lint-staged": {
     "*.js": [
