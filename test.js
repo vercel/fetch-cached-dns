@@ -1,7 +1,10 @@
 /* eslint-env jest*/
+const dns = require('dns')
 const listen = require('async-listen')
 const { createServer } = require('http')
 const cachedDNSFetch = require('./index')(require('node-fetch'))
+
+dns.setServers(['8.8.8.8', '1.1.1.1'])
 
 /**
  * Using `localtest.me` to use DNS to resolve to localhost
@@ -21,6 +24,7 @@ test('works with localtest.me', async () => {
     const res = await cachedDNSFetch(`http://${host}`)
     const body = await res.json()
     expect(res.url).toBe(`http://127.0.0.1:${port}/`)
+    expect(body.url).toBe(`/`)
     expect(body.headers.host).toBe(host)
   } finally {
     server.close()
@@ -67,7 +71,7 @@ test('works with relative redirects', async () => {
       res.end(
         JSON.stringify({
           url: req.url,
-          host: req.headers.host
+          headers: req.headers
         })
       )
     }
@@ -82,7 +86,7 @@ test('works with relative redirects', async () => {
     expect(await res.status).toBe(200)
     const body = await res.json()
     expect(body.url).toBe(`/foo`)
-    expect(body.host).toBe(host)
+    expect(body.headers.host).toBe(host)
   } finally {
     server.close()
   }
