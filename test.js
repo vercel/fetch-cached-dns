@@ -1,10 +1,7 @@
 /* eslint-env jest*/
-const dns = require('dns')
 const listen = require('async-listen')
 const { createServer } = require('http')
 const cachedDNSFetch = require('./index')(require('node-fetch'))
-
-dns.setServers(['8.8.8.8', '1.1.1.1'])
 
 /**
  * Using `localtest.me` to use DNS to resolve to localhost
