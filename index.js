@@ -1,6 +1,7 @@
 const { isIP } = require('net')
 const { format, parse } = require('url')
 const resolve = require('@zeit/dns-cached-resolve').default
+const { dnsCachedUrl } = require('./util')
 
 module.exports = setup
 
@@ -23,13 +24,22 @@ function setup(fetch) {
         opts.headers.set('Host', parsed.host)
       }
       opts.redirect = 'manual'
-      parsed.host = parsed.hostname = await resolve(parsed.hostname)
+      parsed.host = await resolve(parsed.hostname)
       if (parsed.port) {
         parsed.host += `:${parsed.port}`
       }
       url = format(parsed)
     }
     const res = await fetch(url, opts)
+
+    // Update `res.url` to contain the original hostname instead of the IP address
+    res[dnsCachedUrl] = url
+    Object.defineProperty(res, 'url', {
+      get() {
+        return parsed.href
+      }
+    })
+
     if (isRedirect(res.status)) {
       const redirectOpts = Object.assign({}, opts)
       redirectOpts.headers = new Headers(opts.headers)
@@ -49,17 +59,17 @@ function setup(fetch) {
       // absolutize a relative redirect URL, so the IP address needs to be
       // replaced with the original hostname as well.
       const location = res.headers.get('Location')
-      let { host: redirectHost } = parse(location)
-      if (redirectHost === parsed.host) {
-        redirectHost = originalHost
+      const parsedLocation = parse(location)
+      if (parsedLocation.host === parsed.host) {
+        parsedLocation.host = originalHost
       }
-      redirectOpts.headers.set('Host', redirectHost)
+      redirectOpts.headers.set('Host', parsedLocation.host)
 
       if (opts.onRedirect) {
         opts.onRedirect(res, redirectOpts)
       }
 
-      return fetchCachedDns(location, redirectOpts)
+      return fetchCachedDns(format(parsedLocation), redirectOpts)
     }
     return res
   }

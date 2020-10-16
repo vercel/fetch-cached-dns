@@ -1,6 +1,7 @@
 /* eslint-env jest*/
 const listen = require('async-listen')
 const { createServer } = require('http')
+const { dnsCachedUrl } = require('./util')
 const cachedDNSFetch = require('./index')(require('node-fetch'))
 
 /**
@@ -20,7 +21,8 @@ test('works with localtest.me', async () => {
     const host = `localtest.me:${port}`
     const res = await cachedDNSFetch(`http://${host}`)
     const body = await res.json()
-    expect(res.url).toBe(`http://127.0.0.1:${port}/`)
+    expect(res.url).toBe(`http://${host}/`)
+    expect(res[dnsCachedUrl]).toBe(`http://127.0.0.1:${port}/`)
     expect(body.url).toBe(`/`)
     expect(body.headers.host).toBe(host)
   } finally {
@@ -49,6 +51,8 @@ test('works with absolute redirects', async () => {
 
   try {
     const res = await cachedDNSFetch(`http://localtest.me:${portA}`)
+    expect(res.url).toBe(`http://localtest.me:${portB}/`)
+    expect(res[dnsCachedUrl]).toBe(`http://127.0.0.1:${portB}/`)
     expect(await res.status).toBe(200)
     expect(await res.text()).toBe(`localtest.me:${portB}`)
   } finally {
@@ -80,6 +84,8 @@ test('works with relative redirects', async () => {
     const host = `localtest.me:${port}`
     const res = await cachedDNSFetch(`http://${host}`)
     expect(count).toBe(2)
+    expect(res.url).toBe(`http://${host}/foo`)
+    expect(res[dnsCachedUrl]).toBe(`http://127.0.0.1:${port}/foo`)
     expect(await res.status).toBe(200)
     const body = await res.json()
     expect(body.url).toBe(`/foo`)
