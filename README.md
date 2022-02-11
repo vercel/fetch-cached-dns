@@ -1,6 +1,6 @@
 # fetch-cached-dns
 
-[![Build Status](https://github.com/zeit/fetch-cached-dns/workflows/Node%20CI/badge.svg)](https://github.com/zeit/fetch-cached-dns/actions?workflow=Node+CI)
+**This repo has been archived and the source has been moved to [vercel/fetch](https://github.com/vercel/fetch) monorepo**
 
 A decorator on top of `fetch` that caches the DNS query of the `hostname` of the passed URL.
 
